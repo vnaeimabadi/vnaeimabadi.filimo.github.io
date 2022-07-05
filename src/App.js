@@ -1,23 +1,91 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import { supabase } from "./supabaseClient";
+import moment from "jalali-moment";
 
 function App() {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [createdTime, setCreatedTime] = useState("");
+  const getData = async () => {
+    try {
+      if (loading) return;
+      setLoading(true);
+      const { data, error } = await supabase.from("filimosms").select();
+      setTimeout(() => {
+        if (data) {
+          setMessage(data[0].message);
+          let dd = moment(data[0].date, "YYYY/MM/DD")
+            .locale("fa")
+            .format("YYYY/MM/DD");
+          setCreatedTime(dd + " " + data[0].time);
+        }
+        setLoading(false);
+      }, 1000);
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div
+      style={{
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "#1B2845",
+        flexDirection: "column",
+        direction: "rtl",
+      }}
+    >
+      <div
+        style={{
+          background: "#335C81",
+          color: "white",
+          padding: "20px",
+          borderRadius: "3px",
+          minWidth: "300px",
+          textAlign: "center",
+        }}
+      >
+        <span>{loading ? <progress></progress> : `${message}`}</span>
+      </div>
+      <div
+        style={{
+          background: "#335C81",
+          color: "white",
+          padding: "20px",
+          borderRadius: "3px",
+          minWidth: "300px",
+          marginTop: "10px",
+          textAlign: "center",
+          direction: "ltr",
+        }}
+      >
+        <span>{loading ? <progress></progress> : `${createdTime}`}</span>
+      </div>
+
+      <div
+        className="button"
+        style={{
+          background: loading ? "rgba(34, 111, 84, 0.4)" : "#226F54",
+          color: "white",
+          padding: "20px",
+          borderRadius: "3px",
+          minWidth: "300px",
+          marginTop: "10px",
+          textAlign: "center",
+          cursor: "pointer",
+        }}
+        onClick={getData}
+        disabled={loading}
+      >
+        <span>بروزرسانی</span>
+      </div>
     </div>
   );
 }
