@@ -15,10 +15,7 @@ function App() {
       setTimeout(() => {
         if (data) {
           setMessage(data[0].message);
-          let dd = moment(data[0].date, "YYYY/MM/DD")
-            .locale("fa")
-            .format("YYYY/MM/DD");
-          setCreatedTime(dd + " " + data[0].time);
+          setCreatedTime(data[0].time);
         }
         setLoading(false);
       }, 1000);
